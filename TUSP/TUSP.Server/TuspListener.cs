@@ -1,29 +1,29 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using TUSP.Domain;
 
 namespace TUSP.Server;
 
 public class TuspListener
 {
+    // TODO make async
     public void StartTestListening()
     {
         int listenPort = 5000;
-        using (UdpClient udpServer = new UdpClient(listenPort))
+        using (UdpClient udpClient = new UdpClient(listenPort))
         {
             Console.WriteLine($"[Server] Listening on port {listenPort}...");
+
+            var dispatcher = new CommandDispatcher(udpClient);
 
             while (true)
             {
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
-                byte[] data = udpServer.Receive(ref remoteEP);
-                string message = Encoding.UTF8.GetString(data);
+                byte[] data = udpClient.Receive(ref remoteEP);
 
-                Console.WriteLine($"[Server] Received from {remoteEP}: {message}");
+                TuspPackage package = data.DeserializeTuspPackage();
 
-                string response = "Hello from server";
-                byte[] responseData = Encoding.UTF8.GetBytes(response);
-                udpServer.Send(responseData, responseData.Length, remoteEP);
+                dispatcher.HandleRequest(package, remoteEP);
             }
         }
     }
