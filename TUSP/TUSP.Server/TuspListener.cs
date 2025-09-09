@@ -7,7 +7,7 @@ namespace TUSP.Server;
 public class TuspListener
 {
     // TODO make async
-    public void StartTestListening()
+    public void StartListening()
     {
         int listenPort = 5000;
         using (UdpClient udpClient = new UdpClient(listenPort))
