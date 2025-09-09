@@ -88,7 +88,7 @@ public class TuspClient
         }
     }
 
-    public void StartVideoStream(string remoteHost, int remotePort)
+    public void StartTestVideoStream(string remoteHost, int remotePort)
     {
         var package = new TuspPackage()
         {
@@ -117,10 +117,40 @@ public class TuspClient
         }
     }
 
+    public void StartVideoStream(string remoteHost, int remotePort, IMediaConsumer consumer)
+    {
+        var package = new TuspPackage()
+        {
+            SessionId = 0,
+            Payload = [],
+            MessageType = Server.Enums.TuspMessageType.Data,
+            SequenceNumber = 0
+        };
+
+        try
+        {
+            var byteMessage = package.Serialize();
+            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
+
+            _udpClient.Send(byteMessage, byteMessage.Length, remoteHost, (int)remotePort);
+
+            consumer.StartConsuming();
+            ConsumeVideoStream(remotePort, consumer);
+        }
+        catch (SocketException ex) when (ex.SocketErrorCode == SocketError.TimedOut)
+        {
+            Console.WriteLine($"[Client] Reply from {remoteHost}: Request timed out.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Client] Reply from {remoteHost}: Error - {ex.Message}");
+        }
+    }
+
     private List<byte> _segmentBuffer = new();
     private uint _expectedSequence = 0;
 
-    private void ConsumeVideoStream(int localPort)
+    private void ConsumeVideoStream(int localPort, IMediaConsumer consumer = null)
     {
         IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
 
@@ -140,7 +170,7 @@ public class TuspClient
                     _expectedSequence++;
                 }
 
-                HandleVideoChunk(package);
+                HandleVideoChunk(package, consumer);
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.TimedOut)
             {
@@ -149,7 +179,7 @@ public class TuspClient
         }
     }
 
-    private void HandleVideoChunk(TuspPackage package)
+    private void HandleVideoChunk(TuspPackage package, IMediaConsumer consumer = null)
     {
         _segmentBuffer.AddRange(package.Payload);
 
@@ -159,6 +189,11 @@ public class TuspClient
         {
             byte[] completeSegment = _segmentBuffer.ToArray();
             _segmentBuffer.Clear();
+
+            if (consumer is not null)
+            {
+                consumer.AddSegment(completeSegment);
+            }
 
             DecodeSegment(completeSegment);
         }
