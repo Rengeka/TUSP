@@ -31,10 +31,10 @@ internal class CommandDispatcher
                 }
             case TuspMessageType.Data:
                 {
-                    byte[] fakeSegment = new byte[5000]; // 5000 fake bytes
-                    new Random().NextBytes(fakeSegment);
+                    byte[] segmentData = File.ReadAllBytes("content/out_000.mp4");
+                    new Random().NextBytes(segmentData);
 
-                    SendChunked(fakeSegment, TuspMessageType.Data, ep, 1);
+                    SendChunked(segmentData, TuspMessageType.Data, ep, 1);
 
                     break;
                 }
@@ -109,6 +109,8 @@ internal class CommandDispatcher
 
             byte[] bytes = package.Serialize();
             _udpClient.Send(bytes, bytes.Length, remoteEP);
+
+            Console.WriteLine($"[Server] Chunk {i} was sent");
         }
     }
 }

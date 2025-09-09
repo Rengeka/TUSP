@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Media files
+*.mp4
+*.mov
+*.mp3
+*.exe
+
 # User-specific files
 *.rsuser
 *.suo

@@ -153,7 +153,7 @@ public class TuspClient
     {
         _segmentBuffer.AddRange(package.Payload);
 
-        Console.WriteLine($"[Client] Received segment: {package.PayloadLength} bytes");
+        Console.WriteLine($"[Client] Received segment {package.SequenceNumber}: {package.PayloadLength} bytes");
 
         if (package.Headers.TryGetValue("IsLast", out var isLastStr) && bool.Parse(isLastStr))
         {

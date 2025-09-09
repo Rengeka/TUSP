@@ -13,5 +13,12 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\TUSP.Domain\TUSP.Domain.csproj" />
 	</ItemGroup>
-	
+
+	<ItemGroup>
+		<None Include="conten4\**\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+
 </Project>
