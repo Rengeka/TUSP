@@ -30,7 +30,7 @@ internal class TestMediaConsumer : IMediaConsumer
                 else
                 {
                     Console.WriteLine($"[MediaPlayer] Waiting for next segment");
-                    await Task.Delay(500);
+                    await Task.Delay(2000);
                 }
             }
         }, _cts.Token);
