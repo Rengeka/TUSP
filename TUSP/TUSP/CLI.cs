@@ -1,15 +1,16 @@
 ﻿using TUSP.Client;
+using TUSP.Server;
 
 namespace TUSP;
 
 public static class CLI
 {
-    // Инициализация словаря команд
     static CLI()
     {
         _commands = new Dictionary<string, Func<string[], int>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "ping", Ping }
+            { "ping", Ping },
+            { "listen", Listen }
         };
     }
 
@@ -41,6 +42,17 @@ public static class CLI
         }
     }
 
+    public static int Listen(params string[] args)
+    {
+        var tuspServer = new TuspListener();
+        var thread = new Thread(tuspServer.StartListening);
+
+        Console.WriteLine("Starting TUSP server...");
+        thread.Start();
+
+        return 0;
+    }
+
     /// <summary>
     /// Ping a TUSP server
     /// </summary>
@@ -50,9 +62,8 @@ public static class CLI
     public static int Ping(params string[] args)
     {
         string host = null;
-        int port = 5000; // дефолтный порт
+        int port = 5000; 
 
-        // Разбор аргументов
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i])

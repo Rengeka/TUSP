@@ -1,4 +1,14 @@
 ﻿using TUSP;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        CLI.Execute(args);
+    }
+}
+
+/*using TUSP;
 using TUSP.Client;
 using TUSP.Server;
 
@@ -15,3 +25,4 @@ tuspCient.Ping("localhost", 5000);
 tuspCient.Init("localhost", 5000);
 //tuspCient.StartTestVideoStream("localhost", 5000);
 tuspCient.StartVideoStream("localhost", 5000, mediaPlayer);
+*/
